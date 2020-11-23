@@ -53,6 +53,7 @@ public class servidor{
       ArrayList<String> lista2 = new ArrayList<String>();
       ArrayList<String> lista3 = new ArrayList<String>();
       ArrayList<String> usuarios = new ArrayList<String>();
+      ArrayList<String> correos = new ArrayList<String>();
       ArrayList<String[]> comando = new ArrayList<String[]>();
 
 
@@ -79,6 +80,7 @@ public class servidor{
             boolean flag = true;
             System.out.println("SERVER: OK LOGIN");
             outC.println("Sesion Iniciada para " + Arrays.toString(comando.get(0)));
+            out.println("OK LOGIN");
 
             //INICIO MENU
             while (flag) {
@@ -100,41 +102,56 @@ public class servidor{
                   while (myDb.next("rs2")) {
                     usuarios.add(myDb.getString("contacto", "rs2"));
                   }
-                  System.out.println(usuarios);
-                  out.println("OK CLIST "+usuarios);
-                  /*for(int i=0;i <=usuarios.length;i++){
-                    if (i=usuarios.length){
-                      out.println(usuario[i] + "*");
-                    }else{
-                      out.println(usuarios[i]);
-                    }
-                  }*/
+            //      System.out.println(usuarios);
+                  out.println("OK CLIST ");
+                  for(int i=0;i <=usuarios.size();i++){
+                    System.out.println(usuarios.get(i));
+                    out.println(usuarios.get(i));
+                  }
+                  out.println(" *");
+                  System.out.print(" *");
                 } else {
-                  System.out.println("CLIST ERROR 103: no existen contactos.");
-                  out.println("LOGIN ERROR 103: no existen contactos.");
+                  System.out.println("CLIST ERROR 103");
+                  out.println("LOGIN ERROR 103");
                 }
               }
 
+              //DESPLEGAR LISTA DE CORREOS
+              if (comando.get(0).equals("GETNEWMAILS")){
+                query = "SELECT mail FROM correos WHERE id = '%s';";
+                query2 = String.format(query, id);
+                if (myDb.executeQuery(query2, "rs3")) {
+                  System.out.println("CLIST SUCCESFULL");
+                  while (myDb.next("rs3")) {
+                    correos.add(myDb.getString("contacto", "rs3"));
+                  }
+                }
+                    out.println("OK GETNEWMAILS ");
+                    for(int i = 0; correos.size(); i++){
+                      System.out.println(correos.get(i));
+                      out.println(correos.get(i));
+                    }system.out.print(" *");out.println(" *");
+                  }
+
+
               //ENVIAR CORREO
               else if (comando.get(0).equals("SEND") && comando.get(1).equals("MAIL")){
-                out.println("nombre de usuario");
                 String nombreContacto = in.readLine();
                 if (nombreContacto != null){
-                  out.println("Subject");
                   String subject = in.readLine();
-                  out.println("Body");
                   String body = in.readLine();
                   if(Pattern.matches(regex,nombreContacto)){
                     if (subject != null) {
                       if (body != null) {
                         if (lista.contains(nombreContacto)){
-                          String correo = nombreContacto + " ~ " + subject + " ~ " + body;
-                          query = "INSERT INTO correos('id','destino','subject', 'body') VALUES('%s', '%s','s%','%s');";
-                          query2 = String.format(query, id, nombreContacto, subject, body);
+                          String correo = nombreContacto + subject + body;
+                          query = "INSERT INTO correos('id','mail') VALUES('%s', '%s');";
+                          query2 = String.format(query, id, correo);
                           myDb.executeNonQuery(query2);
-                        } else {System.out.println("ERROR 104: unknown contact.");out.println("ERROR 104: unknown contact.");}
-                      }else{System.out.println("ERROR 108: no body.");out.println("ERROR 108: no body.");}
-                    }else{System.out.println("ERROR 107: no Subject.");out.println("ERROR 107: no Subject.");}
+                          out.println("OK SEND MAIL"); System.out.println("END SEND MAIL");
+                        } else {System.out.println("SEND ERROR 104");out.println("SEND ERROR 104");}
+                      }else{System.out.println("SEND ERROR 108");out.println("SEND ERROR 108");}
+                    }else{System.out.println("SEND ERROR 107");out.println("SEND ERROR 107");}
                   }if (Pattern.matches(regex2, nombreContacto)){
                     outS2.println("CHECK CONTACT "+ nombreContacto);
                     peticionS2 = inS2.readLine();
@@ -146,18 +163,18 @@ public class servidor{
                             outS2.println("MAIL FROM "+ nombreContacto);
                             outS2.println("MAIL SUBJECT "+ subject);
                             outS2.println("MAIL BODY "+ body);
-                            outS2.println("END SEND MAIL");
+                            outS2.println("OK SEND MAIL");
                             peticionS2 = inS2.readLine();
-                            if (peticionS2.equals("SEND ERROR 201 "+ nombreContacto)){System.out.println("ERROR 201: unknown contact");out.println("ERROR 201: unknown contact");}
-                            else if (peticionS2.equals("SEND ERROR 202")){System.out.println("ERROR 202: no sender.");out.println("ERROR 202: no sender");}
-                            else if (peticionS2.equals("SEND ERROR 203")){System.out.println("ERROR 203: no subject.");out.println("ERROR 203: no subject");}
-                            else if (peticionS2.equals("SEND ERROR 204")){System.out.println("ERROR 204: no body.");out.println("ERROR 204: no body");}
-                          }else{System.out.println("ERROR 108: no body.");out.println("ERROR 108: no body.");}
-                        } else {System.out.println("ERROR 107: no Subject.");out.println("ERROR 107: no Subject.");}
-                      }else {System.out.println("ERROR 205: unknown contact");out.println("ERROR 205: unknown contact");}
-                    }else {System.out.println("ERROR 206: unknown server");out.println("ERROR 105: unknown server");}
+                            if (peticionS2.equals("SEND ERROR 201 "+ nombreContacto)){System.out.println("SEND ERROR 201: unknown contact");out.println("SEND ERROR 201: unknown contact");}
+                            else if (peticionS2.equals("SEND ERROR 202")){System.out.println("SEND ERROR 202");out.println("SEND ERROR 202");}
+                            else if (peticionS2.equals("SEND ERROR 203")){System.out.println("SEND ERROR 203");out.println("SEND ERROR 203");}
+                            else if (peticionS2.equals("SEND ERROR 204")){System.out.println("SEND ERROR 204");out.println("SEND ERROR 204");}
+                          }else{System.out.println("SEND ERROR 108");out.println("SEND ERROR 108");}
+                        } else {System.out.println("SEND ERROR 107");out.println("SEND ERROR 107");}
+                      }else {System.out.println("SEND ERROR 205");out.println("SEND ERROR 205");}
+                    }else {System.out.println("SEND ERROR 206");out.println("SEND ERROR 105");}
                   }
-                }else{System.out.println("ERROR 106: No hay recipiente.");out.println("ERROR 107: no hay recipiente.");}
+                }else{System.out.println("SEND ERROR 106");out.println("SEND ERROR 106");}
             }
 
               //AGREGAR CONTACTO
@@ -169,7 +186,7 @@ public class servidor{
                     query2 = String.format(query, id, nuevoCont);
                     myDb.executeNonQuery(query2);
                     out.println("OK NEWCONT "+ nuevoCont);
-                  } else {System.out.println("ERROR 109: contact not found.");out.println("ERROR 109: contact not found.");}
+                  } else {System.out.println("NEWCONT ERROR 109");out.println("NEWCONT ERROR 109");}
                 }else{
                   outS2.println("CHECK CONTACT " + nuevoCont);
                   peticionS2 = inS2.readLine();
@@ -179,8 +196,8 @@ public class servidor{
                       query2 = String.format(query, id, nuevoCont);
                       myDb.executeNonQuery(query2);
                       out.println("OK NEWCONT "+ nuevoCont);
-                    }else{System.out.println("ERROR 109: unknown contact");out.println("ERROR 109: unknown contact");}
-                  }else{System.out.println("ERROR 110: unknown server");out.println("ERROR 110: unknown server");}
+                    }else{System.out.println("NEWCONT ERROR 109");out.println("NEWCONT ERROR 109");}
+                  }else{System.out.println("NEWCONT ERROR 110");out.println("NEWCONT ERROR 110");}
                 }
               }
 
@@ -199,11 +216,11 @@ public class servidor{
             }
           } else {
             System.out.println("server: LOGIN ERROR 102");
-            out.println("LOGIN ERROR 102\n Password Incorrecta");
+            out.println("LOGIN ERROR 102");
           }
         } else {
           System.out.println("server: LOGIN ERROR 101");
-          out.println("LOGIN ERROR 101\n Usuario no encontrado");
+          out.println("LOGIN ERROR 101");
         }
         if (comando.get(0).equals("LOGOUT")){
           out.println("OK LOGOUT");
@@ -213,15 +230,13 @@ public class servidor{
 
 
       in.close();
-      inS.close();
+
       inD.close();
       inS2.close();
       out.close();
-      outS.close();
       outD.close();
       outS2.close();
       socketC.close();
-      socketS.close();
       socketD.close();
       myDb.close();
 
@@ -231,9 +246,7 @@ public class servidor{
     System.out.println(e.getMessage());}
   }
 
-public void run(){
 
-}
 }
 
 public class MyThread extends Threads{
@@ -257,8 +270,10 @@ public class MyThread extends Threads{
     while(true){
       String opcion = in.readLine();
       comandoo.add(opcion.split(" "));
-      if (comandoo.get(0)){
-        
+      if (comandoo.get(0).equals("SEND")){
+
+
+
       }
 
     }
