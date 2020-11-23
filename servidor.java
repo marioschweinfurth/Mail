@@ -17,6 +17,95 @@ public class servidor{
   }
 
   public static void main(String[] args) throws IOException {
+    MyThread2 sc = new MyThread2(1400);
+    MyThread ss = new MyThread(1500);
+
+    sc.run();
+    sc.run2();
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    while(true){
+      String opcion = br.readLine();
+      if (opcion.equals("exit")){
+        break;
+      }
+
+    }
+
+}
+
+public class MyThread extends Threads{
+  int puerto;
+  public MyThread(int puerto){
+    super();
+    this.puerto = puerto;
+  }
+
+  public void run(){
+    ServerSocket serverS = new ServerSocket(puerto);
+    System.out.println("puerto 1500 abierto...");
+    Socket socketS = serverS.accept();
+    System.out.println("conectando con otro servidor..."); out.println("Coneccion exitosa con gmail server.")
+    PrintWriter out = new PrintWriter(socketS.getOutputStream(), true);
+    InputStreamReader isr = new InputStreamReader(socketS.getInputStream());
+    BufferedReader in = new BufferedReader(isr);
+
+    ArrayList<String[]> comandoo = new ArrayList<String[]>();
+    ArrayList<String[]> cuentas = new ArrayList<String[]>();
+    ArrayList<String[]> cuentas2 = new ArrayList<String[]>();
+
+    comandoo.clear();
+    cuentas.clear();
+    cuentas2.clear();
+    String opcion = in.readLine();
+    comandoo.add(opcion.split(" "));
+    if (comandoo.get(0).equals("SEND")){
+      String destino = in.readLine();
+      String sujeto = in.readLine();
+      String Body = in.readLine();
+      if (destino != null){
+        if (sujeto != null){
+          if (body != null){
+            myDb.executeQuery("SELECT user FROM usuarios;","rs4");
+            while(myDb.next("rs4")){
+              cuentas.add(myDb.getString("user","rs4"));
+            }
+            if (cuentas.contain(comandoo.get(1))){
+              String query = "SELECT id FROM usuarios WHERE user = '%s';";
+              String query2 = String.format(query, comandoo.get(1));
+              id = myDb.getString(query, comandoo.get(1));
+              String agregar = String.format("INSERT INTO correos('id','mail') VALUES('%s','%s')", id, comandoo.get(1));
+              myDb.executeNonQuery(agregar);
+              out.println("OK SEND MAIL"); System.out.println("OK SEND MAIL");
+            }else{out.println("SEND ERROR 201");System.out.println("SEND ERROR 201")}
+          }else{System.out.println("SEND ERROR 204"); out.println("SEND ERROR 204");}
+        }else{System.out.println("SEND ERROR 203"); out.println("SEND ERROR 203");}
+      }else{System.out.println("SEND ERROR 202"); out.println("SEND ERROR 202");}
+    }
+    else if(comandoo.get(0).equals("CHECK")){
+      cuentas2.add(comando.get(2).split("@"));
+      if (cuentas.get(1).equals("gmail")){
+        myDb.executeQuery("SELECT user FROM usuarios;","rs4");
+        while(myDb.next("rs4")){
+          cuentas.add(myDb.getString("user","rs4"));
+        }
+        if(cuentas.contain(comandoo.get(2))){
+          out.println("OK CHECK"); System.out.println("OK CHECK");
+        }else{out.println("CHECK ERROR 205"); system.out.println("CHECK ERROR 205");}
+      }else{out.println("CHECK ERROR 206"); System.out.println("CHECK ERROR 206");}
+    }
+  }
+}
+
+public class MyThread2 extends Threads{
+  int puerto;
+  public MyThread(int puerto){
+    super();
+    this.puerto = puerto;
+  }
+
+  public void run2(){
     try{
 
       ServerSocket serverC = new ServerSocket(puerto);
@@ -144,7 +233,7 @@ public class servidor{
                     if (subject != null) {
                       if (body != null) {
                         if (lista.contains(nombreContacto)){
-                          String correo = nombreContacto +" ~ "+ subject +" ~ "+ body;
+                          String correo = nombreContacto + " ~ "+ subject +" ~ "+ body;
                           query = "INSERT INTO correos('id','mail') VALUES('%s', '%s');";
                           query2 = String.format(query, id, correo);
                           myDb.executeNonQuery(query2);
@@ -245,38 +334,5 @@ public class servidor{
     System.out.println(e.getClass());
     System.out.println(e.getMessage());}
   }
-
-
-}
-
-public class MyThread extends Threads{
-  int puerto;
-  public MyThread(int puerto){
-    super();
-    this.puerto = puerto;
   }
-
-  public void run(){
-    ServerSocket serverS = new ServerSocket(puerto);
-    System.out.println("puerto 1500 abierto...");
-    Socket socketS = serverS.accept();
-    System.out.println("conectando con otro servidor..."); out.println("Coneccion exitosa con gmail server.")
-    PrintWriter out = new PrintWriter(socketS.getOutputStream(), true);
-    InputStreamReader isr = new InputStreamReader(socketS.getInputStream());
-    BufferedReader in = new BufferedReader(isr);
-
-    ArrayList<String[]> comandoo = new ArrayList<String[]>();
-
-    while(true){
-      String opcion = in.readLine();
-      comandoo.add(opcion.split(" "));
-      if (comandoo.get(0).equals("SEND")){
-
-
-
-      }
-
-    }
-  }
-
 }
