@@ -144,7 +144,7 @@ public class servidor{
                     if (subject != null) {
                       if (body != null) {
                         if (lista.contains(nombreContacto)){
-                          String correo = nombreContacto + subject + body;
+                          String correo = nombreContacto +" ~ "+ subject +" ~ "+ body;
                           query = "INSERT INTO correos('id','mail') VALUES('%s', '%s');";
                           query2 = String.format(query, id, correo);
                           myDb.executeNonQuery(query2);
